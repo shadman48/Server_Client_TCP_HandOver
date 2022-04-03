@@ -18,13 +18,20 @@ public class Client
         try
         {
             socket = new Socket(address, port);
-            System.out.println("Connected");
+            System.out.println("Connected to server.");
 
             // takes input from terminal
             input = new DataInputStream(System.in);
 
             // sends output to the socket
             out = new DataOutputStream(socket.getOutputStream());
+            out.writeUTF("PK connected to server");
+            System.out.println(socket.getInetAddress());
+            System.out.println(socket.getReceiveBufferSize());
+            System.out.println(socket.getSendBufferSize());
+            System.out.println(socket.toString());
+
+
         }
         catch(UnknownHostException u)
         {
@@ -38,13 +45,15 @@ public class Client
         // string to read message from input
         String line = "";
 
-        // keep reading until "Over" is input
-        while (!line.equals("Over"))
+        // keep reading until "Exit" is input
+        while (!line.equals("Exit"))
         {
             try
             {
                 line = input.readLine();
                 out.writeUTF(line);
+
+
             }
             catch(IOException i)
             {
