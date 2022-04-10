@@ -9,8 +9,8 @@ public class Server
     //initialize socket and input stream
     private Socket		 socket = null;
     private ServerSocket server = null;
-    private DataInputStream in	 = null;
-
+    private DataInputStream ClientIn = null;
+    private DataOutputStream SeverOut = null;
     // constructor with port
     public Server(int port)
     {
@@ -18,38 +18,58 @@ public class Server
         try
         {
             server = new ServerSocket(port);
-            System.out.println("Server started");
+            System.out.println(">Server started");
 
-            System.out.println("Waiting for a client ...");
+            System.out.println(">Waiting for a client ...");
 
             socket = server.accept();
-            System.out.println("Client accepted");
+            System.out.println(">Client accepted" );
+
+            // sends output to the socket
+            SeverOut = new DataOutputStream(socket.getOutputStream());
+            SeverOut.writeUTF("Welcome");
+
 
             // takes input from the client socket
-            in = new DataInputStream(
+            ClientIn = new DataInputStream(
                     new BufferedInputStream(socket.getInputStream()));
 
+            String Serverline = "";
             String line = "";
+            int num = 0;
 
-            // reads message from client until "Over" is sent
+
+            // reads message from client until "Exit" is sent
             while (!line.equals("Exit"))
             {
                 try
                 {
-                    line = in.readUTF();
-                    System.out.println(line);
+//                  Read in client messages
+//                    line = ClientIn.readUTF();
+//                    System.out.println("<Client: " + line);
 
+//                  Read in client messages
+                    line = ClientIn.readUTF();
+                    System.out.println("<Client: " + line);
+
+
+//                  Server Reply
+                    Serverline = "hello ";
+                    SeverOut.writeUTF(Serverline + num);
+                    num++;
+                    SeverOut.flush();
                 }
                 catch(IOException i)
                 {
                     System.out.println(i);
                 }
+
             }
             System.out.println("Closing connection");
 
             // close connection
             socket.close();
-            in.close();
+            ClientIn.close();
         }
         catch(IOException i)
         {

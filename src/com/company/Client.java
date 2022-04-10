@@ -9,6 +9,7 @@ public class Client
     // initialize socket and input output streams
     private Socket socket		 = null;
     private DataInputStream input = null;
+    private DataInputStream serverIn = null;
     private DataOutputStream out	 = null;
 
     // constructor to put ip address and port
@@ -20,16 +21,17 @@ public class Client
             socket = new Socket(address, port);
             System.out.println("Connected to server.");
 
+
             // takes input from terminal
             input = new DataInputStream(System.in);
 
+//            Takes input from server socket
+            serverIn = new DataInputStream(socket.getInputStream());
+//            System.out.println("Server: " + serverIn.readUTF());
+
             // sends output to the socket
             out = new DataOutputStream(socket.getOutputStream());
-            out.writeUTF("PK connected to server");
-            System.out.println(socket.getInetAddress());
-            System.out.println(socket.getReceiveBufferSize());
-            System.out.println(socket.getSendBufferSize());
-            System.out.println(socket.toString());
+            out.writeUTF("Connected");
 
 
         }
@@ -44,14 +46,21 @@ public class Client
 
         // string to read message from input
         String line = "";
+        int packets = 0;
 
         // keep reading until "Exit" is input
         while (!line.equals("Exit"))
         {
             try
             {
+                if(serverIn.available() >= 0)
+                    System.out.println("Server: " + serverIn.readUTF());
                 line = input.readLine();
-                out.writeUTF(line);
+                out.writeUTF(line + packets);
+
+//                out.writeInt(packets);
+                if(packets < 5)
+                    packets++;
 
 
             }
@@ -59,6 +68,7 @@ public class Client
             {
                 System.out.println(i);
             }
+
         }
 
         // close the connection
