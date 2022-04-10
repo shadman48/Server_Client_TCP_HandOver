@@ -53,14 +53,24 @@ public class Client
         {
             try
             {
-                if(serverIn.available() >= 0)
+                if(serverIn.available() >= 0) {
+//                    String[] temp = serverIn.readUTF().split(" ");
+//                    String[] temp = serverIn.readUTF().split(" ");
+//                    packageNumAck = Integer.parseInt(temp[1]);
+//                    System.out.println("Server: ACK-> " + temp[0]);
                     System.out.println("Server: " + serverIn.readUTF());
-                line = input.readLine();
-                out.writeUTF(line + packets);
+                }
+//                line = input.readLine();
+//                out.writeUTF(line + packets);
 
-//                out.writeInt(packets);
-                if(packets < 5)
+
+                if(packets < 5){
+                    out.writeUTF(String.valueOf(packets));
                     packets++;
+                }else {
+                    line = "Exit";
+                    out.writeUTF(line);
+                }
 
 
             }

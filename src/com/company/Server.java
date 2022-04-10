@@ -50,11 +50,11 @@ public class Server
 
 //                  Read in client messages
                     line = ClientIn.readUTF();
-                    System.out.println("<Client: " + line);
+                    System.out.println("<Client: Packet->" + line);
 
 
 //                  Server Reply
-                    Serverline = "hello ";
+                    Serverline = "ACK->";
                     SeverOut.writeUTF(Serverline + num);
                     num++;
                     SeverOut.flush();
