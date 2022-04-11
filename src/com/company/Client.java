@@ -53,17 +53,12 @@ public class Client
         {
             try
             {
+//                Checks if server has any outputstream content and then prints it
                 if(serverIn.available() >= 0) {
-//                    String[] temp = serverIn.readUTF().split(" ");
-//                    String[] temp = serverIn.readUTF().split(" ");
-//                    packageNumAck = Integer.parseInt(temp[1]);
-//                    System.out.println("Server: ACK-> " + temp[0]);
                     System.out.println("Server: " + serverIn.readUTF());
                 }
-//                line = input.readLine();
-//                out.writeUTF(line + packets);
 
-
+//                sends 5 packets to server
                 if(packets < 5){
                     out.writeUTF(String.valueOf(packets));
                     packets++;
@@ -97,5 +92,6 @@ public class Client
     public static void main(String args[])
     {
         Client client = new Client("127.0.0.1", 5000);
+//        Client client = new Client("192.168.1.125", 5000);
     }
 }

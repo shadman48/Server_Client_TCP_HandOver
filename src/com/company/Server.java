@@ -45,15 +45,11 @@ public class Server
                 try
                 {
 //                  Read in client messages
-//                    line = ClientIn.readUTF();
-//                    System.out.println("<Client: " + line);
-
-//                  Read in client messages
                     line = ClientIn.readUTF();
                     System.out.println("<Client: Packet->" + line);
 
 
-//                  Server Reply
+//                  Server replying with ACK packet number
                     Serverline = "ACK->";
                     SeverOut.writeUTF(Serverline + num);
                     num++;
