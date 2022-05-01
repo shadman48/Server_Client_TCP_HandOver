@@ -79,7 +79,7 @@ public class Client
 
         Scanner scn = new Scanner(System.in);
 
-        System.out.println("Enter the total no of frame: ");
+        System.out.println("Enter the total no of frames: ");
 //        noOfFrame = scn.nextInt();
         noOfFrame = 5;
 
@@ -122,14 +122,14 @@ public class Client
                         if (drop > 0.01){
 
                             if(endByte >= retransThreshold){
-                                out.writeUTF(String.valueOf(i));
+                                out.writeUTF("DROPPED:" + String.valueOf(i));
 
                                 if (!missedFrames.isEmpty()){
                                     for(int j = 0; j < missedFrames.size(); j++){
                                         double retransDrop = Math.random();
                                         if (retransDrop > 0.01){
                                             //System.out.println("Sending frame " + missedFrames.get(j));
-                                            out.writeUTF(String.valueOf(missedFrames.get(j)));
+                                            out.writeUTF("MISSED:" + String.valueOf(missedFrames.get(j)));
                                             //if we get ack back
                                             missedFrames.remove(j);
                                             dueFrame--;
@@ -177,12 +177,6 @@ public class Client
                     }
                     startByte = endByte+1;
                 }
-
-//                todo: THIS WAS THROWING ERRORS
-//                if(dueFrame <= 0){
-//                    line = "Exit";
-//                    out.writeUTF(line);
-//                }
             }
             catch(IOException i)
             {
