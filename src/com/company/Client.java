@@ -19,7 +19,7 @@ public class Client
     private DataOutputStream out	 = null;
 
     //this generates the new window based on whether a packet was transmitted or lost.
-    public static int genWindow(int winSize, boolean permPacketLost, boolean currpacketLost) {
+    public static int genWindow(int winSize, boolean permPacketLost, boolean currpacketLost, int noOfPackets) {
 
         if (currpacketLost) winSize = (int) (winSize / 2);
         else if (permPacketLost) {
@@ -28,6 +28,7 @@ public class Client
         if (!permPacketLost) {
             winSize *= 2;
         }
+        if (winSize > noOfPackets) winSize = noOfPackets;
         return winSize;
     }
     // constructor to put ip address and port
@@ -105,10 +106,10 @@ public class Client
                 System.out.println("start byte " + startByte + "/ end byte " + endByte);
 
                 //for loop iterates through the window from start to end
-                for (int i = startByte; i <= 10; i++) {
+                for (int i = startByte; i <= endByte; i++) {
                     System.out.println("inside for loop - i = " + i);
                     if (endByte > noOfPackets) {
-                        endByte = 20; //noofframe is last frame in 10 mil or 2^16
+                        endByte = noOfPackets; //noofframe is last frame in 10 mil or 2^16
 
                     }
 
@@ -137,14 +138,17 @@ public class Client
                                         missedPackets.remove(j);
                                         duePackets--;
                                         currPacketLost = false;
-                                        newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
-                                        endByte += newWinSize - winSize;
-                                        winSize = newWinSize;
-                                        //obvi we dont remove if no ack comes back
+                                        if (winSize < noOfPackets){
+                                            newWinSize = genWindow(winSize,permPacketLost,currPacketLost,noOfPackets);
+                                            endByte += newWinSize - winSize;
+                                            winSize = newWinSize;
+                                            //obvi we dont remove if no ack comes back
+                                        }
+
                                     }
                                     else{
                                         currPacketLost = true;
-                                        newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
+                                        newWinSize = genWindow(winSize,permPacketLost,currPacketLost,noOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;
                                     }
@@ -162,13 +166,17 @@ public class Client
 
                             out.writeUTF("SENT:" + String.valueOf(i));
                             currPacketLost = false;
-                            newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
-                            endByte += newWinSize - winSize;
-                            winSize = newWinSize;
-                            System.out.println("Sending frame " + i
-                                    + " - newWindow size " + newWinSize
-                                    + " - endByte " + endByte
-                                    + " - winSize " + winSize);
+                            if (winSize < noOfPackets){
+                                newWinSize = genWindow(winSize,permPacketLost,currPacketLost,noOfPackets);
+                                endByte += newWinSize - winSize;
+                                winSize = newWinSize;
+                                //obvi we dont remove if no ack comes back
+                                System.out.println("Sending frame " + i
+                                        + " - newWindow size " + newWinSize
+                                        + " - endByte " + endByte
+                                        + " - winSize " + winSize);
+                            }
+
                         }
                     }
 
@@ -179,7 +187,7 @@ public class Client
                         missedPackets.add(i);
                         currPacketLost = true;
                         permPacketLost = true;
-                        newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
+                        newWinSize = genWindow(winSize,permPacketLost,currPacketLost,noOfPackets);
                         endByte += newWinSize - winSize;
                         winSize = newWinSize;
                     }
