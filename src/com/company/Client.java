@@ -109,7 +109,6 @@ public class Client
                     System.out.println("inside for loop - i = " + i);
                     if (endByte > noOfPackets) {
                         endByte = 20; //noofframe is last frame in 10 mil or 2^16
-
                     }
 
 
@@ -160,7 +159,7 @@ public class Client
                         //until retransthreshold is reached, we send packets using this else block.
                         else {
 
-                            out.writeUTF("SENT:" + String.valueOf(i));
+                            out.writeUTF(String.valueOf(i));
                             currPacketLost = false;
                             newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
                             endByte += newWinSize - winSize;

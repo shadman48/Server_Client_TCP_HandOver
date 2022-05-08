@@ -48,11 +48,12 @@ public class Server
                     line = ClientIn.readUTF();
                     System.out.println("<Client: Packet->" + line);
 
+//                    String packetNumber = toString().substring(toString().lastIndexOf(":") + 0);
+//                    System.out.println("<Server: Packet->" + packetNumber);
 
 //                  Server replying with ACK packet number
                     Serverline = "ACK->";
-                    SeverOut.writeUTF(Serverline + num);
-                    num++;
+                    SeverOut.writeUTF(Serverline + line);
                     SeverOut.flush();
                 }
                 catch(IOException i)
