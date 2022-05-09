@@ -1,0 +1,4 @@
+Line 1 = droppedPacketsList, Line 2 = droppedTimeList in milliseconds, Line 3 = receivedTimeList in milliseconds
+1,6
+2,5
+2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5

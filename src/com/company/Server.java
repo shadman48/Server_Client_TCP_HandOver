@@ -129,13 +129,15 @@ public class Server
             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
 
 //            Saving to file
+            writer.write("Line 1 = droppedPacketsList, Line 2 = droppedTimeList in milliseconds, Line 3 = receivedTimeList in milliseconds" + "\n");
+
             String dropped = droppedPacketsList.stream().collect(Collectors.joining(","));
             System.out.println(dropped);
-            writer.write(dropped + ",");
+            writer.write(dropped + "\n");
 
             String dropTime = droppedTimeList.stream().collect(Collectors.joining(","));
-            System.out.println(dropTime + ",");
-            writer.write(dropTime);
+            System.out.println(dropTime);
+            writer.write(dropTime + "\n");
 
             String received = receivedTimeList.stream().collect(Collectors.joining(","));
             System.out.println(received);
