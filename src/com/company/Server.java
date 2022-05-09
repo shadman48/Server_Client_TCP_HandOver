@@ -3,6 +3,7 @@ package com.company;
 // A Java program for a Server
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class Server
 {
@@ -35,29 +36,74 @@ public class Server
                     new BufferedInputStream(socket.getInputStream()));
 
             String Serverline = "";
-            String line = "";
+            String packet = "";
             int num = 0;
+
+            ArrayList<Integer> arrayList = new ArrayList<>();
+            int goodPutTimer = 10;
+            int goodput = 0;
+            int currentPacketNumber = 0;
+            int recivedPacketNumber = 0;
+            int LastRecivedPacketNumber = 0;
+            int missingPacketNumber;
+            int missingPacketCount = 0;
 
 
             // reads message from client until "Exit" is sent
-            while (!line.equals("Exit"))
-            {
-                try
-                {
+            while (!packet.equals("Exit")) {
+                try {
 //                  Read in client messages
-                    line = ClientIn.readUTF();
-                    System.out.println("<Client: Packet->" + line);
+                    packet = ClientIn.readUTF();
+                    System.out.println("<Client: Packet->" + packet);
 
-//                    String packetNumber = toString().substring(toString().lastIndexOf(":") + 0);
-//                    System.out.println("<Server: Packet->" + packetNumber);
+                    if(packet.equals("Exit"))
+                        break;
 
-//                  Server replying with ACK packet number
+//                  Server replying with ACK of packet number
                     Serverline = "ACK->";
-                    SeverOut.writeUTF(Serverline + line);
+
+//                    Check if its sending packet numbers yet.
+
+                    if (packet.matches("-?\\d+(\\.\\d+)?")) {
+                        recivedPacketNumber = Integer.parseInt(packet);
+//                        System.out.println("PACKET NUMBER " + currentPacketNumber + " recieved" + recivedPacketNumber);
+                    }
+
+                    if (recivedPacketNumber >= 1 ) {
+                        if (recivedPacketNumber == 1)
+                            currentPacketNumber = recivedPacketNumber;
+//
+//                    if the new packet number matches the internal counter then send an ACK
+                        if (recivedPacketNumber == currentPacketNumber) {
+
+//                            SeverOut.writeUTF(Serverline + packet);
+//                            System.out.println("PACKET NUMBER " + currentPacketNumber +" recieved" + recivedPacketNumber);
+                        }
+//                    add missing packet number to arraylist tracker
+                        else {
+//                      Get recivedpacketNumber and compar to PrevRecivedpacket
+                            missingPacketNumber = recivedPacketNumber - 1;
+                            System.out.println("MISSING PACKET NUMBER " + missingPacketNumber);
+                            arrayList.add(missingPacketNumber);
+                            missingPacketCount++;
+
+                            currentPacketNumber = recivedPacketNumber;
+                        }
+
+                        currentPacketNumber++;
+
+
+//                  checking the goodput ever 1000 packets
+                        if (recivedPacketNumber % goodPutTimer == 0) {
+                            goodput = recivedPacketNumber / (recivedPacketNumber + missingPacketCount);
+                            missingPacketCount = 0;
+                            System.out.println("-------------------Current Good-put: " + goodput);
+                        }
+
+                    }
                     SeverOut.flush();
-                }
-                catch(IOException i)
-                {
+
+                } catch (IOException i) {
                     System.out.println(i);
                 }
 

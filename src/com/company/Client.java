@@ -77,18 +77,18 @@ public class Client
         boolean currPacketLost = false;
         int retransThreshold = 1000;
 
-//        Scanner scn = new Scanner(System.in);
 
-//        System.out.println("Enter the total no of frames: ");
-//        noOfPackets = scn.nextInt();
+//      Number of packets
         noOfPackets = 20;
 
-//        System.out.println("Enter the window size: ");
-//        winSize = scn.nextInt();
+//        Window size
         winSize = 1;
 
         int duePackets = noOfPackets;
         ArrayList<Integer> missedPackets = new ArrayList<Integer>();
+
+//        Array for keeping track of information for graphs
+//        TODO: HERE
 
         // keep reading until "Exit" is input
         while (!line.equals("Exit"))
@@ -115,7 +115,8 @@ public class Client
                     double dropChance = Math.random();
 
                     //if dropChance > 1% then we send the packet, if < 1% we dropChance the packet
-                    if (dropChance > 0.01){
+                    if (i != 4){
+//                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
                         if(endByte >= retransThreshold){
                             System.out.println("inside end byte");
