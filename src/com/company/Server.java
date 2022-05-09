@@ -37,33 +37,39 @@ public class Server
 
             String Serverline = "";
             String packet = "";
-            int num = 0;
+//            int num = 0;
 
-            ArrayList<Integer> arrayList = new ArrayList<>();
+            ArrayList<Integer> droppedPacketsList = new ArrayList<>();
+            ArrayList<Long> receivedTimeList = new ArrayList<>();
+            ArrayList<Long> droppedTimeList = new ArrayList<>();
+
+
+
             int goodPutTimer = 5;
-            int goodput = 0;
+            double goodput = 0;
             int currentPacketNumber = 0;
             int recivedPacketNumber = 0;
-            int LastRecivedPacketNumber = 0;
+//            int LastRecivedPacketNumber = 0;
             int missingPacketNumber;
             int missingPacketCount = 0;
+            final long startTime = System.currentTimeMillis();
 
-
+//            PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
             // reads message from client until "Exit" is sent
-            while (!packet.equals("Exit")) {
+            while (true) {
                 try {
 //                  Read in client messages
                     packet = ClientIn.readUTF();
                     System.out.println("<Client: Packet->" + packet);
-
-                    if(packet.equals("Exit"))
-                        break;
+                    goodput = 0;
 
 //                  Server replying with ACK of packet number
                     Serverline = "ACK->";
+//                    SeverOut.writeUTF(Serverline);
 
 //                    Check if its sending packet numbers yet.
-
+                    if(packet.equals("Exit"))
+                        break;
                     if (packet.matches("-?\\d+(\\.\\d+)?")) {
                         recivedPacketNumber = Integer.parseInt(packet);
 //                        System.out.println("PACKET NUMBER " + currentPacketNumber + " recieved" + recivedPacketNumber);
@@ -76,31 +82,39 @@ public class Server
 //                    if the new packet number matches the internal counter then send an ACK
                         if (recivedPacketNumber == currentPacketNumber) {
 
-//                            SeverOut.writeUTF(Serverline + packet);
+                            final long endTime = System.currentTimeMillis();
+                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                            receivedTimeList.add(endTime);
+//                            SeverOut.writeUTF("hi");
 //                            System.out.println("PACKET NUMBER " + currentPacketNumber +" recieved" + recivedPacketNumber);
                         }
 //                    add missing packet number to arraylist tracker
                         else {
-//                      Get recivedpacketNumber and compar to PrevRecivedpacket
+                            final long endTime = System.currentTimeMillis();
+                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                            droppedTimeList.add(endTime);
                             missingPacketNumber = recivedPacketNumber - 1;
                             System.out.println("MISSING PACKET NUMBER " + missingPacketNumber);
-                            arrayList.add(missingPacketNumber);
+                            droppedPacketsList.add(missingPacketNumber);
                             missingPacketCount++;
 
                             currentPacketNumber = recivedPacketNumber;
                         }
 
-                        currentPacketNumber++;
-
 
 //                  checking the goodput ever 1000 packets
                         if (recivedPacketNumber % goodPutTimer == 0) {
-                            goodput = recivedPacketNumber / (recivedPacketNumber + missingPacketCount);
-                            System.out.println("-------------------Current Good-put: " + goodput);
+                            goodput = (double) recivedPacketNumber / ((double) recivedPacketNumber + missingPacketCount);
+                            System.out.printf("-------------------Current Good-put: %.2f %n", goodput);
                             missingPacketCount = 0;
+
                         }
 
+
+                        currentPacketNumber++;
+//                        System.setOut(out);
                     }
+//                    System.setOut(out);
                     SeverOut.flush();
 
                 } catch (IOException i) {
@@ -108,6 +122,15 @@ public class Server
                 }
 
             }
+            final long endTime = System.currentTimeMillis();
+
+            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+
+
+
+//            System.setOut(out);
+
+
             System.out.println("Closing connection");
 
             // close connection

@@ -2,13 +2,12 @@ package com.company;
 
 // A Java program for a Client
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Client
 {
@@ -31,8 +30,7 @@ public class Client
         return winSize;
     }
     // constructor to put ip address and port
-    public Client(String address, int port)
-    {
+    public Client(String address, int port) throws FileNotFoundException {
         // establish a connection
         try
         {
@@ -89,6 +87,9 @@ public class Client
 
 //        Array for keeping track of information for graphs
 //        TODO: HERE
+        ArrayList<String> windowSizeList = new ArrayList<>();
+        final long startTime = System.currentTimeMillis();
+
 
         // keep reading until "Exit" is input
         while (!line.equals("Exit"))
@@ -104,6 +105,9 @@ public class Client
 
                 System.out.println("start byte " + startByte + "/ end byte " + endByte);
 
+                PrintWriter writer = new PrintWriter("windowSizeList.csv");
+
+
                 //for loop iterates through the window from start to end
                 for (int i = startByte; i <= 20; i++) {
                     System.out.println("inside for loop - i = " + i);
@@ -115,7 +119,8 @@ public class Client
                     double dropChance = Math.random();
 
                     //if dropChance > 1% then we send the packet, if < 1% we dropChance the packet
-                    if (i != 4){
+//                    if (i != 4 || i != 9){
+                    if (dropChance > 0.1){
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
                         if(endByte >= retransThreshold){
@@ -165,10 +170,10 @@ public class Client
                             newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
                             endByte += newWinSize - winSize;
                             winSize = newWinSize;
-                            System.out.println("Sending frame " + i
-                                    + " - newWindow size " + newWinSize
-                                    + " - endByte " + endByte
-                                    + " - winSize " + winSize);
+//                            System.out.println("Sending frame " + i
+//                                    + " - newWindow size " + newWinSize
+//                                    + " - endByte " + endByte
+//                                    + " - winSize " + winSize);
                         }
                     }
 
@@ -184,9 +189,17 @@ public class Client
                         winSize = newWinSize;
                     }
 
+
+                    writer.println(String.join(",", windowSizeList));
                 }//End of main for loop
 
                 out.writeUTF("Exit");
+                final long endTime = System.currentTimeMillis();
+                System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                windowSizeList.add(String.valueOf(endTime)+",");
+;
+
+
                 break;
 
                 //after sending 10 million packets. we gotta resend dropped packets present in the arraylist one last time
@@ -224,6 +237,8 @@ public class Client
             }
         }//end of while loop
 
+
+
         // close the connection
         try
         {
@@ -237,111 +252,8 @@ public class Client
         }
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) throws FileNotFoundException {
         Client client = new Client("127.0.0.1", 5000);
 //        Client client = new Client("192.168.1.125", 5000);
     }
 }
-
-
-
-
-
-//package com.company;
-//
-//// A Java program for a Client
-//import java.net.*;
-//import java.io.*;
-//
-//public class Client
-//{
-//    // initialize socket and input output streams
-//    private Socket socket		 = null;
-//    private DataInputStream input = null;
-//    private DataInputStream serverIn = null;
-//    private DataOutputStream out	 = null;
-//
-//    // constructor to put ip address and port
-//    public Client(String address, int port)
-//    {
-//        // establish a connection
-//        try
-//        {
-//            socket = new Socket(address, port);
-//            System.out.println("Connected to server.");
-//
-//
-//            // takes input from terminal
-//            input = new DataInputStream(System.in);
-//
-////            Takes input from server socket
-//            serverIn = new DataInputStream(socket.getInputStream());
-////            System.out.println("Server: " + serverIn.readUTF());
-//
-//            // sends output to the socket
-//            out = new DataOutputStream(socket.getOutputStream());
-//            out.writeUTF("Connected");
-//
-//
-//        }
-//        catch(UnknownHostException u)
-//        {
-//            System.out.println(u);
-//        }
-//        catch(IOException i)
-//        {
-//            System.out.println(i);
-//        }
-//
-//        // string to read message from input
-//        String line = "";
-//        int packets = 0;
-//
-//        // keep reading until "Exit" is input
-//        while (!line.equals("Exit"))
-//        {
-//            try
-//            {
-////                Checks if server has any outputstream content and then prints it
-//                if(serverIn.available() >= 0) {
-//                    System.out.println("Server: " + serverIn.readUTF());
-//                }
-//
-////                sends 5 packets to server
-//                if(packets < 5){
-//                    out.writeUTF(String.valueOf(packets));
-//                    packets++;
-//                }else {
-//                    line = "Exit";
-//                    out.writeUTF(line);
-//                }
-//
-//
-//            }
-//            catch(IOException i)
-//            {
-//                System.out.println(i);
-//            }
-//
-//        }
-//
-//        // close the connection
-//        try
-//        {
-//            input.close();
-//            out.close();
-//            socket.close();
-//        }
-//        catch(IOException i)
-//        {
-//            System.out.println(i);
-//        }
-//    }
-//
-//    public static void main(String args[])
-//    {
-//        Client client = new Client("127.0.0.1", 5000);
-////        Client client = new Client("192.168.1.125", 5000);
-//    }
-//}
