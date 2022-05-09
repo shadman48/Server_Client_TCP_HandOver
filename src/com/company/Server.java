@@ -41,6 +41,7 @@ public class Server
 //            int num = 0;
 
             ArrayList<String> droppedPacketsList = new ArrayList<>();
+            ArrayList<String> receivedPacketsList = new ArrayList<>();
             ArrayList<String> receivedTimeList = new ArrayList<>();
             ArrayList<String> droppedTimeList = new ArrayList<>();
 
@@ -83,14 +84,17 @@ public class Server
 //                    if the new packet number matches the internal counter then send an ACK
                         if (recivedPacketNumber == currentPacketNumber) {
 
+//                            This gets the time for when this packet was received
                             final long endTime = System.currentTimeMillis();
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             receivedTimeList.add(String.valueOf(endTime - startTime));
+                            receivedPacketsList.add(String.valueOf(recivedPacketNumber));
 //                            SeverOut.writeUTF("hi");
 //                            System.out.println("PACKET NUMBER " + currentPacketNumber +" received" + recivedPacketNumber);
                         }
 //                    add missing packet number to arraylist tracker
                         else {
+//                            This gets the time for when this packet was NOT received (time it was dropped)
                             final long endTime = System.currentTimeMillis();
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             droppedTimeList.add(String.valueOf(endTime - startTime));
@@ -101,6 +105,7 @@ public class Server
                             missingPacketCount++;
 
                             currentPacketNumber = recivedPacketNumber;
+                            receivedPacketsList.add(String.valueOf(recivedPacketNumber));
                         }
 
 
@@ -130,16 +135,20 @@ public class Server
 //            writer.write("Line 1 = droppedPacketsList, Line 2 = droppedTimeList in milliseconds, Line 3 = receivedTimeList in milliseconds" + "\n");
 
             String dropped = droppedPacketsList.stream().collect(Collectors.joining(","));
-            System.out.println(dropped);
+            System.out.println("droppedPacketsList: " + dropped);
             writer.write(dropped + "\n");
 
             String dropTime = droppedTimeList.stream().collect(Collectors.joining(","));
-            System.out.println(dropTime);
+            System.out.println("droppedTimeList in ms: " + dropTime);
             writer.write(dropTime + "\n");
 
-            String received = receivedTimeList.stream().collect(Collectors.joining(","));
-            System.out.println(received);
-            writer.write(received);
+            String received = receivedPacketsList.stream().collect(Collectors.joining(","));
+            System.out.println("receivedPacketList: " + received);
+            writer.write(received + "\n");
+
+            String receivedtime = receivedTimeList.stream().collect(Collectors.joining(","));
+            System.out.println("receivedTimeList in ms: " + receivedtime);
+            writer.write(receivedtime);
 
             writer.close();
 
