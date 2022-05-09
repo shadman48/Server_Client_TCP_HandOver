@@ -40,7 +40,7 @@ public class Server
             int num = 0;
 
             ArrayList<Integer> arrayList = new ArrayList<>();
-            int goodPutTimer = 10;
+            int goodPutTimer = 5;
             int goodput = 0;
             int currentPacketNumber = 0;
             int recivedPacketNumber = 0;
@@ -96,8 +96,8 @@ public class Server
 //                  checking the goodput ever 1000 packets
                         if (recivedPacketNumber % goodPutTimer == 0) {
                             goodput = recivedPacketNumber / (recivedPacketNumber + missingPacketCount);
-                            missingPacketCount = 0;
                             System.out.println("-------------------Current Good-put: " + goodput);
+                            missingPacketCount = 0;
                         }
 
                     }
