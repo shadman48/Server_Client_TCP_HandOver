@@ -196,7 +196,7 @@ public class Client
                 out.writeUTF("Exit");
                 final long endTime = System.currentTimeMillis();
                 System.out.println("Total execution time: " + (endTime - startTime) + "ms");
-                windowSizeList.add(String.valueOf(endTime)+",");
+                windowSizeList.add(String.valueOf(endTime - startTime));
 ;
 
 

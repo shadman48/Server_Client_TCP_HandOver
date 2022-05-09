@@ -4,6 +4,7 @@ package com.company;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Server
 {
@@ -39,9 +40,9 @@ public class Server
             String packet = "";
 //            int num = 0;
 
-            ArrayList<Integer> droppedPacketsList = new ArrayList<>();
-            ArrayList<Long> receivedTimeList = new ArrayList<>();
-            ArrayList<Long> droppedTimeList = new ArrayList<>();
+            ArrayList<String> droppedPacketsList = new ArrayList<>();
+            ArrayList<String> receivedTimeList = new ArrayList<>();
+            ArrayList<String> droppedTimeList = new ArrayList<>();
 
 
 
@@ -53,7 +54,7 @@ public class Server
             int missingPacketNumber;
             int missingPacketCount = 0;
             final long startTime = System.currentTimeMillis();
-
+            FileWriter writer = new FileWriter("server.csv");
 //            PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
             // reads message from client until "Exit" is sent
             while (true) {
@@ -72,7 +73,7 @@ public class Server
                         break;
                     if (packet.matches("-?\\d+(\\.\\d+)?")) {
                         recivedPacketNumber = Integer.parseInt(packet);
-//                        System.out.println("PACKET NUMBER " + currentPacketNumber + " recieved" + recivedPacketNumber);
+//                        System.out.println("PACKET NUMBER " + currentPacketNumber + " received" + recivedPacketNumber);
                     }
 
                     if (recivedPacketNumber >= 1 ) {
@@ -84,18 +85,19 @@ public class Server
 
                             final long endTime = System.currentTimeMillis();
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
-                            receivedTimeList.add(endTime);
+                            receivedTimeList.add(String.valueOf(endTime - startTime));
 //                            SeverOut.writeUTF("hi");
-//                            System.out.println("PACKET NUMBER " + currentPacketNumber +" recieved" + recivedPacketNumber);
+//                            System.out.println("PACKET NUMBER " + currentPacketNumber +" received" + recivedPacketNumber);
                         }
 //                    add missing packet number to arraylist tracker
                         else {
                             final long endTime = System.currentTimeMillis();
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
-                            droppedTimeList.add(endTime);
+                            droppedTimeList.add(String.valueOf(endTime - startTime));
                             missingPacketNumber = recivedPacketNumber - 1;
                             System.out.println("MISSING PACKET NUMBER " + missingPacketNumber);
-                            droppedPacketsList.add(missingPacketNumber);
+
+                            droppedPacketsList.add(String.valueOf(missingPacketNumber));
                             missingPacketCount++;
 
                             currentPacketNumber = recivedPacketNumber;
@@ -126,9 +128,20 @@ public class Server
 
             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
 
+//            Saving to file
+            String dropped = droppedPacketsList.stream().collect(Collectors.joining(","));
+            System.out.println(dropped);
+            writer.write(dropped + ",");
 
+            String dropTime = droppedTimeList.stream().collect(Collectors.joining(","));
+            System.out.println(dropTime + ",");
+            writer.write(dropTime);
 
-//            System.setOut(out);
+            String received = receivedTimeList.stream().collect(Collectors.joining(","));
+            System.out.println(received);
+            writer.write(received);
+
+            writer.close();
 
 
             System.out.println("Closing connection");
