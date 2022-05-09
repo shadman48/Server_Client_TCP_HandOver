@@ -73,7 +73,7 @@ public class Client
         int noOfSent = 0;
         boolean permPacketLost = false;
         boolean currPacketLost = false;
-        int retransThreshold = 1000;
+        int retransThreshold = 10;
 
 
 //      Number of packets
@@ -109,7 +109,7 @@ public class Client
 
 
                 //for loop iterates through the window from start to end
-                for (int i = startByte; i <= 10000; i++) {
+                for (int i = startByte; i <= 100; i++) {
                     System.out.println("inside for loop - i = " + i);
                     if (endByte > noOfPackets) {
                         endByte = 20; //noofframe is last frame in 10 mil or 2^16
@@ -119,12 +119,13 @@ public class Client
                     double dropChance = Math.random();
 
                     //if dropChance > 1% then we send the packet, if < 1% we dropChance the packet
+//                    This if statment is where the packets get sent
 //                    if (i != 4 || i != 9){
-                    if (dropChance > 0.1){
+                    if (dropChance > 0.4){
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
                         if(endByte >= retransThreshold){
-                            System.out.println("inside end byte");
+                            System.out.println("-----------------Inside Retransmission");
                             //out.writeUTF("RESEND:" + String.valueOf(i));
 
 //                          Check if there are missing packets, then resend them.
@@ -157,7 +158,7 @@ public class Client
                             }
 
 
-                            retransThreshold += 1000;//cuz endbyte goes till 10 mil
+                            retransThreshold += 10;//cuz endbyte goes till 10 mil
                         }
 
 
@@ -179,8 +180,8 @@ public class Client
 
                     //in this else block, packets are dropped and added to arraylist.
                     else{
-                        System.out.println("MISSED PACKET " + i);
-                        System.out.println("---------------------------------------------PACKET WAS DROPPED");
+//                        System.out.println("Dropped PACKET " + i);
+                        System.out.println("---------------------------------------------PACKET (" + i +")WAS DROPPED");
                         missedPackets.add(i);
                         currPacketLost = true;
                         permPacketLost = true;

@@ -89,8 +89,23 @@ public class Server
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             receivedTimeList.add(String.valueOf(endTime - startTime));
                             receivedPacketsList.add(String.valueOf(recivedPacketNumber));
+
+                            currentPacketNumber++;
+
 //                            SeverOut.writeUTF("hi");
 //                            System.out.println("PACKET NUMBER " + currentPacketNumber +" received" + recivedPacketNumber);
+                        }
+//                        Checks to see if the new packet is being retransmitted by checking if its in the missing/dropped list.
+                        else if(droppedPacketsList.contains(recivedPacketNumber))
+                        {
+                            final long endTime = System.currentTimeMillis();
+                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                            receivedTimeList.add(String.valueOf(endTime - startTime));
+
+                            receivedPacketsList.add(String.valueOf(recivedPacketNumber));
+                            System.out.println("--------------------------------------------Retransmitted packet: " + currentPacketNumber);
+
+//                            currentPacketNumber = recivedPacketNumber;
                         }
 //                    add missing packet number to arraylist tracker
                         else {
@@ -106,6 +121,7 @@ public class Server
 
                             currentPacketNumber = recivedPacketNumber;
                             receivedPacketsList.add(String.valueOf(recivedPacketNumber));
+                            currentPacketNumber++;
                         }
 
 
@@ -118,7 +134,7 @@ public class Server
                         }
 
 
-                        currentPacketNumber++;
+//                        currentPacketNumber++;
                     }
                     SeverOut.flush();
 
