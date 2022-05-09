@@ -114,9 +114,7 @@ public class Server
 
 
                         currentPacketNumber++;
-//                        System.setOut(out);
                     }
-//                    System.setOut(out);
                     SeverOut.flush();
 
                 } catch (IOException i) {
@@ -129,7 +127,7 @@ public class Server
             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
 
 //            Saving to file
-            writer.write("Line 1 = droppedPacketsList, Line 2 = droppedTimeList in milliseconds, Line 3 = receivedTimeList in milliseconds" + "\n");
+//            writer.write("Line 1 = droppedPacketsList, Line 2 = droppedTimeList in milliseconds, Line 3 = receivedTimeList in milliseconds" + "\n");
 
             String dropped = droppedPacketsList.stream().collect(Collectors.joining(","));
             System.out.println(dropped);
