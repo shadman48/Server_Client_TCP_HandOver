@@ -109,7 +109,7 @@ public class Client
 
 
                 //for loop iterates through the window from start to end
-                for (int i = startByte; i <= 100; i++) {
+                for (int i = startByte; i <= 10000; i++) {
                     System.out.println("inside for loop - i = " + i);
                     if (endByte > noOfPackets) {
                         endByte = 20; //noofframe is last frame in 10 mil or 2^16
