@@ -128,33 +128,32 @@ public class Client
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
                          if(endByte >= retransThreshold || i == numOfPackets){
-                            System.out.println("-----------------Inside Retransmission");
+                            System.out.println("-----------------Inside Retransmission-----------------");
                             //out.writeUTF("RESEND:" + String.valueOf(i));
 
 //                          Check if there are missing packets, then resend them.
                             if (!droppedPackets.isEmpty()){
-                                System.out.println("`````````````````````````Inside Dropped packets List");
+                                System.out.println("```````````Inside Dropped packets List```````````");
                                 for(int j = 0; j < droppedPackets.size(); j++){
                                     double retransmitDropChance = Math.random();
 
 
                                     //even for the dropped packets in the arraylist, if dropChance > 1% we send the packet and remove it from arraylist else we drop it
                                     if (retransmitDropChance > 0.01){
-                                        System.out.println("-----------------Retransmitting packet------- " + droppedPackets.get(j));
+                                        System.out.println("-----------------Retransmitting packet------- [" + droppedPackets.get(j)+"]");
                                         out.writeUTF(String.valueOf(droppedPackets.get(j)));
-                                        //if we get ack back. As in do we wait till we get ack back before removing packet from arraylist?
-                                        droppedPackets.remove(j);
+
                                         currPacketLost = false;
                                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;
                                         System.out.println("Sending frame " + i
-                                                + "RESENDING frame " + j
+                                                + " - RESENDING frame " + String.valueOf(droppedPackets.get(j))
                                                 + " - newWindow size " + newWinSize
                                                 + " - endByte " + endByte
                                                 + " - winSize " + winSize
                                                 + " - retransThreshold " + retransThreshold);
-                                        //obvi we dont remove if no ack comes back
+                                        droppedPackets.remove(j);
                                     }
 //                                    This else is for if the retransmission failed again
                                     else{
