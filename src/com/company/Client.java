@@ -69,7 +69,7 @@ public class Client
 
         int numOfPackets;
         int winSize;
-        int newWinSize;
+        int newWinSize = 0;
         int startByte = 1;
         int endByte = 0;
         int noOfAck = 0;
@@ -112,7 +112,7 @@ public class Client
 
 
                 //for loop iterates through the window from start to end
-                for (int i = startByte; i <= endByte; i++) {
+                for (int i = startByte; i <= numOfPackets; i++) {
                     System.out.println("inside for loop - i = " + i);
                     if (endByte > numOfPackets) {
                         endByte = numOfPackets; //noofframe is last frame in 10 mil or 2^16
@@ -127,7 +127,7 @@ public class Client
                     if (dropChance > 0.1){
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
-                         if(endByte >= retransThreshold){
+                         if(endByte >= retransThreshold || i == numOfPackets){
                             System.out.println("-----------------Inside Retransmission");
                             //out.writeUTF("RESEND:" + String.valueOf(i));
 
@@ -148,6 +148,12 @@ public class Client
                                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;
+                                        System.out.println("Sending frame " + i
+                                                + "RESENDING frame " + j
+                                                + " - newWindow size " + newWinSize
+                                                + " - endByte " + endByte
+                                                + " - winSize " + winSize
+                                                + " - retransThreshold " + retransThreshold);
                                         //obvi we dont remove if no ack comes back
                                     }
 //                                    This else is for if the retransmission failed again
@@ -157,13 +163,37 @@ public class Client
                                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;
+                                        System.out.println("Sending frame " + i
+                                                + " - newWindow size " + newWinSize
+                                                + " - endByte " + endByte
+                                                + " - winSize " + winSize
+                                                + " - retransThreshold " + retransThreshold);
                                     }
                                 }//End of for loop
-                            }
+                            }// End of if (!droppedPackets.isEmpty())
 
 
-                            retransThreshold += 25;//cuz endbyte goes till 10 mil
-                        }
+
+//                             This is where the packets are sent if they are not dropped.
+                             //until retransthreshold is reached, we send packets using this else block.
+                        else {
+
+                                 out.writeUTF(String.valueOf(i));
+                                 currPacketLost = false;
+                                 if (winSize < numOfPackets){
+                                     newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
+                                     endByte += newWinSize - winSize;
+                                     winSize = newWinSize;
+                                     System.out.println("Sending frame " + i
+                                             + " - newWindow size " + newWinSize
+                                             + " - endByte " + endByte
+                                             + " - winSize " + winSize
+                                             + " - retransThreshold " + retransThreshold);
+                                 }
+                             }
+
+                        retransThreshold += 25;//cuz endbyte goes till 10 mil
+                        }//End of if(endByte >= retransThreshold)
 
 
 //                        This is where the packets are sent if they are not dropped.
@@ -176,24 +206,31 @@ public class Client
                             newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                             endByte += newWinSize - winSize;
                             winSize = newWinSize;
-                            System.out.println("Sending frame " + i
-                                    + " - newWindow size " + newWinSize
-                                    + " - endByte " + endByte
-                                    + " - winSize " + winSize);
-                                    }
-                        }
-                    }
+
+                        }System.out.println("Sending frame " + i
+                                     + " - newWindow size " + newWinSize
+                                     + " - endByte " + endByte
+                                     + " - winSize " + winSize
+                                     + " - retransThreshold " + retransThreshold);
+                         }
+                    }//End of if (dropChance > 0.1)
 
                     //in this else block, packets are dropped and added to arraylist.
                     else{
 //                        System.out.println("Dropped PACKET " + i);
                         System.out.println("---------------------------------------------PACKET (" + i +") WAS DROPPED");
                         droppedPackets.add(i);
+                        numOfPackets++;
                         currPacketLost = true;
                         permPacketLost = true;
                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                         endByte += newWinSize - winSize;
                         winSize = newWinSize;
+                        System.out.println("DROPPED Sending frame " + i
+                                + " - newWindow size " + newWinSize
+                                + " - endByte " + endByte
+                                + " - winSize " + winSize
+                                + " - retransThreshold " + retransThreshold);
                     }
 
 
