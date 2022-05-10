@@ -102,6 +102,8 @@ public class Server
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             receivedTimeList.add(String.valueOf(endTime - startTime));
 
+
+
                             receivedPacketsList.add(String.valueOf(recivedPacketNumber));
                             System.out.println("--------------------------------------------Retransmitted packet: " + recivedPacketNumber);
 
