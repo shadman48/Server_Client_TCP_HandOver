@@ -158,7 +158,7 @@ public class Client
                                                 + " - retransThreshold " + retransThreshold);
                                         droppedPackets.remove(0);
 
-                                        
+
                                     }
 //                                    This else is for if the retransmission failed again
                                     else{
