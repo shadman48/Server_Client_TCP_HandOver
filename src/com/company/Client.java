@@ -86,7 +86,7 @@ public class Client
         winSize = 1;
 
         int duePackets = numOfPackets;
-        ArrayList<Integer> droppedPackets = new ArrayList<Integer>();
+        ArrayList<Integer> droppedPackets = new ArrayList<>();
 
 //        Array for keeping track of information for graphs
 //        TODO: HERE
@@ -127,6 +127,8 @@ public class Client
                     if (dropChance > 0.1){
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
+//                        if(i == 55)
+//                            System.out.println("55");
                          if(endByte >= retransThreshold || i == numOfPackets){
                             System.out.println("-----------------Inside Retransmission-----------------");
                             //out.writeUTF("RESEND:" + String.valueOf(i));
@@ -134,31 +136,33 @@ public class Client
 //                          Check if there are missing packets, then resend them.
                             if (!droppedPackets.isEmpty()){
                                 System.out.println("```````````Inside Dropped packets List```````````");
-                                for(int j = 0; j < droppedPackets.size(); j++){
+//                                for(int j = 0; j < droppedPackets.size(); j++){
+                                while(!droppedPackets.isEmpty()){
                                     double retransmitDropChance = Math.random();
 
 
                                     //even for the dropped packets in the arraylist, if dropChance > 1% we send the packet and remove it from arraylist else we drop it
                                     if (retransmitDropChance > 0.01){
-                                        System.out.println("-----------------Retransmitting packet------- [" + droppedPackets.get(j)+"]");
-                                        out.writeUTF(String.valueOf(droppedPackets.get(j)));
+                                        System.out.println("-----------------Retransmitting packet------- [" + droppedPackets.get(0)+"]");
+                                        out.writeUTF(String.valueOf(droppedPackets.get(0)));
 
                                         currPacketLost = false;
                                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;
                                         System.out.println("Sending frame " + i
-                                                + " - RESENDING frame " + String.valueOf(droppedPackets.get(j))
+                                                + " - RESENDING frame " + String.valueOf(droppedPackets.get(0))
                                                 + " - newWindow size " + newWinSize
                                                 + " - endByte " + endByte
                                                 + " - winSize " + winSize
                                                 + " - retransThreshold " + retransThreshold);
-                                        droppedPackets.remove(j);
+                                        droppedPackets.remove(0);
                                     }
 //                                    This else is for if the retransmission failed again
                                     else{
-                                        System.out.println("-----------------Retransmitting packet FAILED !! ------- " + droppedPackets.get(j));
+                                        System.out.println("-----------------Retransmitting packet FAILED !! ------- " + droppedPackets.get(0));
                                         currPacketLost = true;
+                                        numOfPackets++;
                                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;

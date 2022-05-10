@@ -96,14 +96,14 @@ public class Server
 //                            System.out.println("PACKET NUMBER " + currentPacketNumber +" received" + recivedPacketNumber);
                         }
 //                        Checks to see if the new packet is being retransmitted by checking if its in the missing/dropped list.
-                        else if(droppedPacketsList.contains(recivedPacketNumber))
+                        else if(droppedPacketsList.contains(String.valueOf(recivedPacketNumber)))
                         {
                             final long endTime = System.currentTimeMillis();
                             System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             receivedTimeList.add(String.valueOf(endTime - startTime));
 
                             receivedPacketsList.add(String.valueOf(recivedPacketNumber));
-                            System.out.println("--------------------------------------------Retransmitted packet: " + currentPacketNumber);
+                            System.out.println("--------------------------------------------Retransmitted packet: " + recivedPacketNumber);
 
 //                            currentPacketNumber = recivedPacketNumber;
                         }
