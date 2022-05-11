@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import static jdk.nashorn.internal.objects.NativeMath.round;
+
 public class Server
 {
     //initialize socket and input stream
@@ -44,10 +46,11 @@ public class Server
             ArrayList<String> receivedPacketsList = new ArrayList<>();
             ArrayList<String> receivedTimeList = new ArrayList<>();
             ArrayList<String> droppedTimeList = new ArrayList<>();
+            ArrayList<String> goodputList = new ArrayList<>();
 
 
 
-            int goodPutTimer = 5;
+            int goodPutTimer = 1000;
             double goodput = 0;
             int currentPacketNumber = 0;
             int recivedPacketNumber = 0;
@@ -86,7 +89,7 @@ public class Server
 
 //                            This gets the time for when this packet was received
                             final long endTime = System.currentTimeMillis();
-                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+//                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             receivedTimeList.add(String.valueOf(endTime - startTime));
                             receivedPacketsList.add(String.valueOf(recivedPacketNumber));
 
@@ -99,7 +102,7 @@ public class Server
                         else if(droppedPacketsList.contains(String.valueOf(recivedPacketNumber)))
                         {
                             final long endTime = System.currentTimeMillis();
-                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+//                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             receivedTimeList.add(String.valueOf(endTime - startTime));
 
 
@@ -113,7 +116,7 @@ public class Server
                         else {
 //                            This gets the time for when this packet was NOT received (time it was dropped)
                             final long endTime = System.currentTimeMillis();
-                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+//                            System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                             droppedTimeList.add(String.valueOf(endTime - startTime));
                             missingPacketNumber = recivedPacketNumber - 1;
                             System.out.println("MISSING PACKET NUMBER " + missingPacketNumber);
@@ -130,8 +133,10 @@ public class Server
 //                  checking the goodput ever 1000 packets
                         if (recivedPacketNumber % goodPutTimer == 0) {
                             goodput = (double) recivedPacketNumber / ((double) recivedPacketNumber + missingPacketCount);
+                            goodput = Math.round(goodput*100.0)/100.0;
                             System.out.printf("-------------------Current Good-put: %.2f %n", goodput);
                             missingPacketCount = 0;
+                            goodputList.add(String.valueOf(goodput));
 
                         }
 
@@ -170,6 +175,13 @@ public class Server
 
             writer.close();
 
+
+
+            String goodPutt = goodputList.stream().collect(Collectors.joining(","));
+            System.out.println("Good-put in order (per 1K): " + goodPutt);
+
+
+            System.out.println("Total Packets Received: [" + receivedPacketsList.size() + "]");
 
             System.out.println("Closing connection");
 

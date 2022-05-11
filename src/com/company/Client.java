@@ -143,7 +143,7 @@ public class Client
 
 
                                     //even for the dropped packets in the arraylist, if dropChance > 1% we send the packet and remove it from arraylist else we drop it
-                                    if (retransmitDropChance > 0.1){
+                                    if (retransmitDropChance > 0.01){
                                         System.out.println("-----------------Retransmitting packet------- [" + droppedPackets.get(0)+"]");
                                         out.writeUTF(String.valueOf(droppedPackets.get(0)));
 
@@ -298,37 +298,12 @@ public class Client
                 String numOfRetransmission = numOfRetransmissionList.stream().collect(Collectors.joining(","));
                 writer.write(numOfRetransmission);
 
+                System.out.println("Total Packets Sent: [" + (numOfPackets + numOfRetransmissionList.size()) + "]");
+
                 writer.close();
 
                 break;
 
-                //after sending 10 million packets. we gotta resend dropped packets present in the arraylist one last time
-                //as we would have reached the retransThreshold after sending the 10 million packets
-//                if (!missedPackets.isEmpty()){
-//                    for(int j = 0; j < missedPackets.size(); j++){
-//                        double retransDrop = Math.random();
-//
-//                        //even for the dropped packets in the arraylist, if drop > 1% we send the packet and remove it from arraylist else we drop it
-//                        if (retransDrop > 0.01){
-//                            out.writeUTF("retansmitting MISSINGPACKETS:" + String.valueOf(missedPackets.get(j)));
-//
-//                            //if we get ack back. As in do we wait till we get ack back before removing packet from arraylist?
-//                            missedPackets.remove(j);
-//                            duePackets--;
-//                            currPacketLost = false;
-//                            newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
-//                            endByte += newWinSize - winSize;
-//                            winSize = newWinSize;
-//                            //obvi we dont remove if no ack comes back
-//                        }
-//                        else{
-//                            currPacketLost = true;
-//                            newWinSize = genWindow(winSize,permPacketLost,currPacketLost);
-//                            endByte += newWinSize - winSize;
-//                            winSize = newWinSize;
-//                        }
-//                    }
-//                }
 
             }//end of try
             catch(IOException i)
