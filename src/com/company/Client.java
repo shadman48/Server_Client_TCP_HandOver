@@ -143,7 +143,7 @@ public class Client
 
 
                                     //even for the dropped packets in the arraylist, if dropChance > 1% we send the packet and remove it from arraylist else we drop it
-                                    if (retransmitDropChance > 0.01){
+                                    if (retransmitDropChance > 0.1){
                                         System.out.println("-----------------Retransmitting packet------- [" + droppedPackets.get(0)+"]");
                                         out.writeUTF(String.valueOf(droppedPackets.get(0)));
 
