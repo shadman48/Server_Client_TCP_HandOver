@@ -79,11 +79,10 @@ public class Client
         int noOfSent = 0;
         boolean permPacketLost = false;
         boolean currPacketLost = false;
-        int retransThreshold = 25;
-
+        int retransThreshold = 1000;//-------------------------------------------Change here
 
 //      Number of packets
-        numOfPackets = 100;
+        numOfPackets = 10000;// ----------------------------------------------Change here
 
 //        Window size
         winSize = 1;
