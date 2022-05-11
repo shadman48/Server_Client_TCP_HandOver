@@ -7,6 +7,8 @@ import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,7 @@ public class Client
         return winSize;
     }
     // constructor to put ip address and port
-    public Client(String address, int port) throws FileNotFoundException {
+    public Client(String address, int port) throws IOException {
         // establish a connection
         try
         {
@@ -95,7 +97,7 @@ public class Client
         int[][] numOfRetransmissionsList = new int[overFlow][2];
 
         final long startTime = System.currentTimeMillis();
-
+        FileWriter writer = new FileWriter("client.csv");
 
         // keep reading until "Exit" is input
         while (!line.equals("Exit"))
@@ -111,7 +113,7 @@ public class Client
 
                 System.out.println("start byte " + startByte + "/ end byte " + endByte);
 
-                PrintWriter writer = new PrintWriter("windowSizeList.csv");
+//                PrintWriter writer = new PrintWriter("windowSizeList.csv");
 
 
                 //for loop iterates through the window from start to end
@@ -249,13 +251,31 @@ public class Client
                 final long endTime = System.currentTimeMillis();
                 System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                 windowSizeList.add(String.valueOf(endTime - startTime));
-;
+
+                ArrayList<String> packetOfRetransmissionList = new ArrayList<>();
+                ArrayList<String> numOfRetransmissionList = new ArrayList<>();
+
+
                 for (int x = 0; x < numOfRetransmissionsList.length; x++) {
                     for (int xx = 0; xx < numOfRetransmissionsList[x].length; xx++) {
-                        if(numOfRetransmissionsList[x][xx] != 0)
+                        if(numOfRetransmissionsList[x][xx] != 0) {
                             System.out.println("Packet [" + x + "] has been retransmitted [" + numOfRetransmissionsList[x][xx] + "] times.");
+                            packetOfRetransmissionList.add(String.valueOf(x));
+                            numOfRetransmissionList.add(String.valueOf(numOfRetransmissionsList[x][xx]));
+                        }
                     }
                 }
+
+                String windowSize = windowSizeList.stream().collect(Collectors.joining(","));
+                writer.write(windowSize + "\n");
+
+                String packetOfRetransmission = packetOfRetransmissionList.stream().collect(Collectors.joining(","));
+                writer.write(String.valueOf(packetOfRetransmission) + "\n");
+
+                String numOfRetransmission = numOfRetransmissionList.stream().collect(Collectors.joining(","));
+                writer.write(String.valueOf(numOfRetransmission));
+
+                writer.close();
 
                 break;
 
@@ -309,7 +329,7 @@ public class Client
         }
     }
 
-    public static void main(String args[]) throws FileNotFoundException {
+    public static void main(String args[]) throws IOException {
         Client client = new Client("127.0.0.1", 5000);
 //        Client client = new Client("192.168.1.125", 5000);
     }
