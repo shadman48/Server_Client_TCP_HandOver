@@ -3,6 +3,7 @@ package com.company;
 // A Java program for a Client
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -85,12 +86,14 @@ public class Client
 //        Window size
         winSize = 1;
 
-        int duePackets = numOfPackets;
+        int overFlow = (int) (numOfPackets*1.2);
         ArrayList<Integer> droppedPackets = new ArrayList<>();
 
 //        Array for keeping track of information for graphs
 //        TODO: HERE
         ArrayList<String> windowSizeList = new ArrayList<>();
+        int[][] numOfRetransmissionsList = new int[overFlow][2];
+
         final long startTime = System.currentTimeMillis();
 
 
@@ -123,12 +126,9 @@ public class Client
 
                     //if dropChance > 1% then we send the packet, if < 1% we dropChance the packet
 //                    This if statment is where the packets get sent
-//                    if (i != 4 || i != 9){
                     if (dropChance > 0.1){
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
-//                        if(i == 55)
-//                            System.out.println("55");
                          if(endByte >= retransThreshold || i == numOfPackets){
                             System.out.println("-----------------Inside Retransmission-----------------");
                             //out.writeUTF("RESEND:" + String.valueOf(i));
@@ -165,6 +165,7 @@ public class Client
                                         System.out.println("-----------------Retransmitting packet FAILED !! ------- " + droppedPackets.get(0));
                                         currPacketLost = true;
                                         numOfPackets++;
+                                        numOfRetransmissionsList[droppedPackets.get(0)][0]++;
                                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
                                         endByte += newWinSize - winSize;
                                         winSize = newWinSize;
@@ -226,6 +227,8 @@ public class Client
                         System.out.println("---------------------------------------------PACKET (" + i +") WAS DROPPED");
                         droppedPackets.add(i);
                         numOfPackets++;
+
+                        numOfRetransmissionsList[i][0] = 1;
                         currPacketLost = true;
                         permPacketLost = true;
                         newWinSize = genWindow(winSize,permPacketLost,currPacketLost, numOfPackets);
@@ -247,7 +250,12 @@ public class Client
                 System.out.println("Total execution time: " + (endTime - startTime) + "ms");
                 windowSizeList.add(String.valueOf(endTime - startTime));
 ;
-
+                for (int x = 0; x < numOfRetransmissionsList.length; x++) {
+                    for (int xx = 0; xx < numOfRetransmissionsList[x].length; xx++) {
+                        if(numOfRetransmissionsList[x][xx] != 0)
+                            System.out.println("Packet [" + x + "] has been retransmitted [" + numOfRetransmissionsList[x][xx] + "] times.");
+                    }
+                }
 
                 break;
 
