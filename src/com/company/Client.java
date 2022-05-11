@@ -92,7 +92,7 @@ public class Client
         ArrayList<Integer> droppedPackets = new ArrayList<>();
 
 //        Array for keeping track of information for graphs
-//        TODO: HERE
+        ArrayList<String> windowSizeTimeList = new ArrayList<>();
         ArrayList<String> windowSizeList = new ArrayList<>();
         int[][] numOfRetransmissionsList = new int[overFlow][2];
 
@@ -159,7 +159,10 @@ public class Client
                                                 + " - winSize " + winSize
                                                 + " - retransThreshold " + retransThreshold);
                                         droppedPackets.remove(0);
-
+                                        final long endTime = System.currentTimeMillis();
+//                        System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                                        windowSizeTimeList.add(String.valueOf(endTime - startTime));
+                                        windowSizeList.add(String.valueOf(winSize));
 
                                     }
 //                                    This else is for if the retransmission failed again
@@ -176,6 +179,10 @@ public class Client
                                                 + " - endByte " + endByte
                                                 + " - winSize " + winSize
                                                 + " - retransThreshold " + retransThreshold);
+                                        final long endTime = System.currentTimeMillis();
+//                        System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                                        windowSizeTimeList.add(String.valueOf(endTime - startTime));
+                                        windowSizeList.add(String.valueOf(winSize));
                                     }
                                 }//End of for loop
                             }// End of if (!droppedPackets.isEmpty())
@@ -197,6 +204,10 @@ public class Client
                                              + " - endByte " + endByte
                                              + " - winSize " + winSize
                                              + " - retransThreshold " + retransThreshold);
+                                     final long endTime = System.currentTimeMillis();
+//                        System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                                     windowSizeTimeList.add(String.valueOf(endTime - startTime));
+                                     windowSizeList.add(String.valueOf(winSize));
                                  }
                              }
 
@@ -220,6 +231,10 @@ public class Client
                                      + " - endByte " + endByte
                                      + " - winSize " + winSize
                                      + " - retransThreshold " + retransThreshold);
+                             final long endTime = System.currentTimeMillis();
+//                        System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                             windowSizeTimeList.add(String.valueOf(endTime - startTime));
+                             windowSizeList.add(String.valueOf(winSize));
                          }
                     }//End of if (dropChance > 0.1)
 
@@ -241,16 +256,22 @@ public class Client
                                 + " - endByte " + endByte
                                 + " - winSize " + winSize
                                 + " - retransThreshold " + retransThreshold);
+
+                        final long endTime = System.currentTimeMillis();
+//                        System.out.println("Total execution time: " + (endTime - startTime) + "ms");
+                        windowSizeTimeList.add(String.valueOf(endTime - startTime));
+                        windowSizeList.add(String.valueOf(winSize));
                     }
 
 
 //                    writer.println(String.join(",", windowSizeList));
                 }//End of main for loop
 
+                //exits the server socket
                 out.writeUTF("Exit");
-                final long endTime = System.currentTimeMillis();
-                System.out.println("Total execution time: " + (endTime - startTime) + "ms");
-                windowSizeList.add(String.valueOf(endTime - startTime));
+
+
+
 
                 ArrayList<String> packetOfRetransmissionList = new ArrayList<>();
                 ArrayList<String> numOfRetransmissionList = new ArrayList<>();
@@ -269,11 +290,14 @@ public class Client
                 String windowSize = windowSizeList.stream().collect(Collectors.joining(","));
                 writer.write(windowSize + "\n");
 
+                String windowSizeTime = windowSizeTimeList.stream().collect(Collectors.joining(","));
+                writer.write(windowSizeTime + "\n");
+
                 String packetOfRetransmission = packetOfRetransmissionList.stream().collect(Collectors.joining(","));
-                writer.write(String.valueOf(packetOfRetransmission) + "\n");
+                writer.write(packetOfRetransmission + "\n");
 
                 String numOfRetransmission = numOfRetransmissionList.stream().collect(Collectors.joining(","));
-                writer.write(String.valueOf(numOfRetransmission));
+                writer.write(numOfRetransmission);
 
                 writer.close();
 
