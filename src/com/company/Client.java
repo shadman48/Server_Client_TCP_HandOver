@@ -127,7 +127,7 @@ public class Client
 
                     //if dropChance > 1% then we send the packet, if < 1% we dropChance the packet
 //                    This if statment is where the packets get sent
-                    if (dropChance > 0.1){
+                    if (dropChance > 0.01){
 //                    if (dropChance > 0.01){
                         //when we have finished sending number of packets equal to retransthreshold, we look to retransmit from the arraylist
                          if(endByte >= retransThreshold || i == numOfPackets){
@@ -143,7 +143,7 @@ public class Client
 
 
                                     //even for the dropped packets in the arraylist, if dropChance > 1% we send the packet and remove it from arraylist else we drop it
-                                    if (retransmitDropChance > 0.1){
+                                    if (retransmitDropChance > 0.01){
                                         System.out.println("-----------------Retransmitting packet------- [" + droppedPackets.get(0)+"]");
                                         out.writeUTF(String.valueOf(droppedPackets.get(0)));
 
